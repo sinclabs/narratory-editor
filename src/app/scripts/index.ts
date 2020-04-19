@@ -9,12 +9,12 @@
 
 	const editorContainer = <HTMLDivElement>document.querySelector('.editor');
 
-	const addButtonContainer = document.querySelector('.add-button');
-	addButtonContainer?.querySelector('button')?.addEventListener('click', () => {
-		vscode.postMessage({
-			type: 'add'
-		});
-	});
+	// const addButtonContainer = document.querySelector('.add-button');
+	// addButtonContainer?.querySelector('button')?.addEventListener('click', () => {
+	// 	vscode.postMessage({
+	// 		type: 'add'
+	// 	});
+	// });
 
 	const errorContainer = document.createElement('div');
 	document.body.appendChild(errorContainer);
@@ -25,9 +25,9 @@
 	 * Render the document in the webview.
 	 */
 	function updateContent(text: string) {
-		let json: Agent;
+		let agent: Agent;
 		try {
-			json = (JSON.parse(text));
+			agent = (JSON.parse(text));
 		} catch {
 			editorContainer.style.display = 'none';
 			errorContainer.innerText = 'Error: Document is not valid json';
@@ -41,9 +41,27 @@
 		editorContainer.innerHTML = '';
 		
 		const agentName = document.createElement('p');
-		agentName.innerText = `Agent Name: ${json.agentName}`;
+		agentName.innerText = `Agent Name: ${agent.agentName}`;
 		editorContainer.append(agentName);
 		
+		function isAbstractBotTurn(arg: any): arg is AbstractBotTurn {
+			return arg;
+		}
+
+		agent.narrative.forEach(value => {
+			const ele = document.createElement('div');
+			if(isAbstractBotTurn(value)) {
+				ele.innerText = value.label ? value.label : "";
+				
+			} else if (typeof value === 'string') {
+				ele.innerText = value;
+			} else {
+				ele.innerText = value[0];
+			}
+
+			editorContainer.append(ele);
+		});
+
 		// for (const note of json.scratches || []) {
 		// 	const element = document.createElement('div');
 		// 	element.className = 'note';
@@ -68,8 +86,6 @@
 		// 	});
 		// 	element.appendChild(deleteButton);
 		// }
-
-		addButtonContainer && editorContainer.appendChild(addButtonContainer);
 	}
 
 	// Handle messages sent from the extension to the webview
