@@ -99,14 +99,14 @@ export class NarratoryEditorProvider implements vscode.CustomTextEditorProvider 
         try {
             // Local path to script and css for the webview
             const scriptUri = webview.asWebviewUri(vscode.Uri.file(
-                path.join(this.context.extensionPath, 'app', 'js', 'index.js')
+                path.join(this.context.extensionPath, 'out','app', 'scripts', 'index.js')
             ));
             const styleUri = webview.asWebviewUri(vscode.Uri.file(
-                path.join(this.context.extensionPath, 'app', 'css', 'style.css')
+                path.join(this.context.extensionPath, 'out', 'app', 'css', 'style.css')
             ));
 
             // Read the ejs template as string
-            const template = readFileSync(path.join(this.context.extensionPath, 'app', 'index.ejs')).toString();
+            const template = readFileSync(path.join(this.context.extensionPath, 'out', 'app', 'index.ejs')).toString();
 
             // Render the template into a string and return it
             return render(template, {

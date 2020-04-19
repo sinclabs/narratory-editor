@@ -1,4 +1,5 @@
 // @ts-check
+import { Agent } from "../../interfaces";
 
 // Script run within the webview itself.
 (function () {
@@ -9,10 +10,10 @@
 	// @ts-ignore
 	const vscode = acquireVsCodeApi();
 
-	const notesContainer = /** @type {HTMLElement} */ (document.querySelector('.notes'));
+	const editorContainer = <HTMLDivElement>document.querySelector('.editor');
 
 	const addButtonContainer = document.querySelector('.add-button');
-	addButtonContainer.querySelector('button').addEventListener('click', () => {
+	addButtonContainer?.querySelector('button')?.addEventListener('click', () => {
 		vscode.postMessage({
 			type: 'add'
 		});
@@ -26,47 +27,50 @@
 	/**
 	 * Render the document in the webview.
 	 */
-	function updateContent(/** @type {string} */ text) {
-		let json;
+	function updateContent(text: string) {
+		let json: Agent;
 		try {
-			json = JSON.parse(text);
+			json = (JSON.parse(text));
 		} catch {
-			notesContainer.style.display = 'none';
+			editorContainer.style.display = 'none';
 			errorContainer.innerText = 'Error: Document is not valid json';
 			errorContainer.style.display = '';
 			return;
 		}
-		notesContainer.style.display = '';
+		editorContainer.style.display = '';
 		errorContainer.style.display = 'none';
 
 		// Render the scratches
-		notesContainer.innerHTML = '';
-		for (const note of json.scratches || []) {
-			const element = document.createElement('div');
-			element.className = 'note';
-			notesContainer.appendChild(element);
+		editorContainer.innerHTML = '';
+		const agentName = document.createElement('p');
+		agentName.innerText = `Agent Name: ${json.agentName}`;
+		editorContainer.append(agentName);
+		// for (const note of json.scratches || []) {
+		// 	const element = document.createElement('div');
+		// 	element.className = 'note';
+		// 	editorContainer.appendChild(element);
 
-			const text = document.createElement('div');
-			text.className = 'text';
-			const textContent = document.createElement('span');
-			textContent.innerText = note.text;
-			text.appendChild(textContent);
-			element.appendChild(text);
+		// 	const text = document.createElement('div');
+		// 	text.className = 'text';
+		// 	const textContent = document.createElement('span');
+		// 	textContent.innerText = note.text;
+		// 	text.appendChild(textContent);
+		// 	element.appendChild(text);
 
-			const created = document.createElement('div');
-			created.className = 'created';
-			created.innerText = new Date(note.created).toUTCString();
-			element.appendChild(created);
+		// 	const created = document.createElement('div');
+		// 	created.className = 'created';
+		// 	created.innerText = new Date(note.created).toUTCString();
+		// 	element.appendChild(created);
 
-			const deleteButton = document.createElement('button');
-			deleteButton.className = 'delete-button';
-			deleteButton.addEventListener('click', () => {
-				vscode.postMessage({ type: 'delete', id: note.id, });
-			});
-			element.appendChild(deleteButton);
-		}
+		// 	const deleteButton = document.createElement('button');
+		// 	deleteButton.className = 'delete-button';
+		// 	deleteButton.addEventListener('click', () => {
+		// 		vscode.postMessage({ type: 'delete', id: note.id, });
+		// 	});
+		// 	element.appendChild(deleteButton);
+		// }
 
-		notesContainer.appendChild(addButtonContainer);
+		addButtonContainer && editorContainer.appendChild(addButtonContainer);
 	}
 
 	// Handle messages sent from the extension to the webview
