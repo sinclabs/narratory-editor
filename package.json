@@ -10,14 +10,26 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:naratory-editor.helloWorld"
+		"onCommand:naratory-editor.testAgent",
+		"onCustomEditor:agentEditor.narratory"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"customEditors": [
+			{
+				"viewType": "agentEditor.narratory",
+				"displayName": "Narratory agent editor",
+				"selector": [
+					{
+						"filenamePattern": "*.narratory.json"
+					}
+				]
+			}
+		],
 		"commands": [
 			{
-				"command": "naratory-editor.helloWorld",
-				"title": "Hello World"
+				"command": "naratory-editor.testAgent",
+				"title": "Narratory: Test Agent"
 			}
 		]
 	},
@@ -41,5 +53,9 @@
 		"mocha": "^7.1.1",
 		"typescript": "^3.8.3",
 		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"@types/ejs": "^3.0.2",
+		"ejs": "^3.0.2"
 	}
 }
